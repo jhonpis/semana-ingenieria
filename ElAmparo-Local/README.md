@@ -1,14 +1,12 @@
 # El Amparo - ejecución local completa
 
-Esta carpeta contiene la aplicación de escritorio con sus cinco formularios y la API local. No utiliza Azure.
+Esta carpeta contiene la API local, el modelo de base de datos y el script para ejecutarla. El proyecto de escritorio único está en la raíz del repositorio.
 
 ## Abrir en Visual Studio
 
-1. Abra `ElAmparo-Local.sln`.
-2. En el Explorador de soluciones, haga clic derecho sobre `Escritorio`.
-3. Seleccione **Establecer como proyecto de inicio**.
-4. Presione F5.
-5. `Program.cs` inicia la API local de `API\` y después abre el login.
+1. Abra `ElAmparo-Local.sln` para cargar el escritorio, la API y el conector en una sola solución, o `..\el amparo.sln` para cargar solamente el escritorio.
+2. Seleccione `el amparo` como proyecto de inicio y presione F5.
+3. El selector permite elegir **Aplicación de escritorio** o **API en el navegador**. La API solo inicia si se selecciona esa opción.
 
 Desde el login se accede al menú MDI y a:
 
@@ -19,17 +17,11 @@ Desde el login se accede al menú MDI y a:
 
 ## Ejecutar sin Visual Studio
 
-Primero compile la solución en configuración Debug. Después ejecute:
-
-`EjecutarTodo.bat`
-
-El archivo inicia IIS Express con la API local, espera a que responda y abre el ejecutable de escritorio con el login. Al cerrar el escritorio, también cierra la API iniciada por el script.
+Primero compile `..\el amparo.sln` en configuración Debug. Después ejecute `EjecutarTodo.bat` para abrir el selector del escritorio, o `IniciarApi.bat` para iniciar solo la API.
 
 ## Base de datos
 
-Ejecute `BaseDatos\ElAmparo.sql` en SQL Server Management Studio. La configuración local usa:
-
-`(localdb)\MSSQLLocalDB`
+Ejecute `BaseDatos\ElAmparo.sql` en SQL Server Management Studio. La configuración local usa `localhost` con autenticación integrada de Windows.
 
 Base de datos:
 
@@ -43,7 +35,7 @@ Usuarios de prueba:
 
 ## API local
 
-La API se ejecuta en:
+La API se inicia con `IniciarApi.bat` y abre en el navegador:
 
 `http://localhost:59539/`
 

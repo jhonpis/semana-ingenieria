@@ -47,13 +47,14 @@ namespace el_amparo
 
         private void menuCerrarSesion_Click(object sender, EventArgs e)
         {
-            if (login != null)
-                login.Show();
             Close();
         }
 
         private void menuSalirPrograma_Click(object sender, EventArgs e)
         {
+            if (login != null && !login.IsDisposed)
+                login.Close();
+            Close();
             Application.Exit();
         }
     }

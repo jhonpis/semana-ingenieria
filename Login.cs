@@ -26,6 +26,7 @@ namespace el_amparo
 
             try
             {
+                string rol;
                 using (SqlConnection connection = Db.Open("ElAmparo"))
                 using (SqlCommand command = new SqlCommand(
                     "SELECT clave, rol FROM USUARIOS WHERE usuario = @usuario", connection))
@@ -40,10 +41,19 @@ namespace el_amparo
                             return;
                         }
 
-                        string rol = reader[1].ToString();
-                        Hide();
-                        new Menu(rol, this).Show();
+                        rol = reader[1].ToString();
                     }
+                }
+
+                Hide();
+                using (Menu menu = new Menu(rol, this))
+                    menu.ShowDialog(this);
+
+                if (!IsDisposed)
+                {
+                    txClave.Clear();
+                    Show();
+                    Activate();
                 }
             }
             catch (Exception ex) { MessageBox.Show("No fue posible iniciar sesión: " + ex.Message); }

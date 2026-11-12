@@ -8,7 +8,7 @@ namespace el_amparo
         public static SqlConnection Open(string database)
         {
             SqlConnection connection = new SqlConnection(
-                "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=" + database + ";Integrated Security=SSPI;");
+                "Data Source=localhost;Initial Catalog=" + database + ";Integrated Security=SSPI;");
             connection.Open();
             return connection;
         }

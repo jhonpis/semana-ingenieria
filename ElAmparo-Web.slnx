@@ -1,4 +1,4 @@
 <Solution>
-  <Project Path="..\ElAmparo\Conector\Conector.csproj" Id="86cc9d95-2a49-4e5a-a641-2b6d7e31d1b4" />
-  <Project Path="..\ElAmparo\API\API.csproj" Id="39ea2640-bb7a-4052-96c5-d54b9435f6f1" />
+  <Project Path="ElAmparo-Local\Conector\Conector.csproj" Id="86cc9d95-2a49-4e5a-a641-2b6d7e31d1b4" />
+  <Project Path="ElAmparo-Local\API\API.csproj" Id="39ea2640-bb7a-4052-96c5-d54b9435f6f1" />
 </Solution>

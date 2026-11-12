@@ -19,7 +19,9 @@
         .login h2 { color: #176b87; margin-top: 0; }
         nav { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
         button, .link-button { border: 0; border-radius: 5px; padding: 10px 14px; background: #176b87; color: white; cursor: pointer; font-size: 14px; }
-        button:hover, .link-button:hover { background: #0e4d61; }
+        .link-button, .link-button:visited { display: inline-block; color: white; text-decoration: none; }
+        button:hover, .link-button:hover, .link-button:focus { background: #0e4d61; }
+        .link-button:hover, .link-button:focus { color: white; text-decoration: none; }
         button.secondary { background: #64748b; }
         button.danger { background: #b42318; }
         label { display: block; font-weight: bold; margin: 9px 0 4px; }
@@ -169,11 +171,26 @@
                 }).catch(function (error) { showMessage(error.message, true); });
             }
 
+            function withBreedNames(items) {
+                return request('/api/raza').then(function (breeds) {
+                    var breedNames = {};
+                    (breeds || []).forEach(function (breed) { breedNames[breed.codigo] = breed.nombre; });
+                    return (items || []).map(function (item) {
+                        var displayItem = {};
+                        Object.keys(item).forEach(function (key) { displayItem[key] = item[key]; });
+                        displayItem.raza = breedNames[item.codigo_raza] || 'Sin raza';
+                        return displayItem;
+                    });
+                });
+            }
+
             function loadPets() {
                 request('/api/mascota').then(function (items) {
-                    document.getElementById('searchResults').innerHTML = table(items, [{ field: 'id', title: 'Código' }, { field: 'nombre', title: 'Nombre' }, { field: 'codigo_raza', title: 'Raza' }, { field: 'estado', title: 'Estado' }]);
-                    document.getElementById('petsResults').innerHTML = table(items, [{ field: 'id', title: 'Código' }, { field: 'nombre', title: 'Nombre' }, { field: 'estado', title: 'Estado' }, { field: 'descripcion', title: 'Descripción' }], true);
-                    document.querySelectorAll('#petsResults tr.selectable').forEach(function (row) { row.addEventListener('click', function () { selectPet(items[parseInt(row.getAttribute('data-index'), 10)]); }); });
+                    return withBreedNames(items).then(function (displayItems) {
+                        document.getElementById('searchResults').innerHTML = table(displayItems, [{ field: 'id', title: 'Código' }, { field: 'nombre', title: 'Nombre' }, { field: 'raza', title: 'Raza' }, { field: 'estado', title: 'Estado' }]);
+                        document.getElementById('petsResults').innerHTML = table(items, [{ field: 'id', title: 'Código' }, { field: 'nombre', title: 'Nombre' }, { field: 'estado', title: 'Estado' }, { field: 'descripcion', title: 'Descripción' }], true);
+                        document.querySelectorAll('#petsResults tr.selectable').forEach(function (row) { row.addEventListener('click', function () { selectPet(items[parseInt(row.getAttribute('data-index'), 10)]); }); });
+                    });
                 }).catch(function (error) { showMessage(error.message, true); });
             }
 
@@ -214,7 +231,7 @@
             document.getElementById('searchButton').addEventListener('click', function () {
                 var code = document.getElementById('searchCode').value, name = document.getElementById('searchName').value, url = '/api/mascota';
                 if (code) url += '/' + code; else if (name) url += '/buscar/' + encodeURIComponent(name);
-                request(url).then(function (result) { var items = Array.isArray(result) ? result : (result ? [result] : []); document.getElementById('searchResults').innerHTML = table(items, [{ field: 'id', title: 'Código' }, { field: 'nombre', title: 'Nombre' }, { field: 'codigo_raza', title: 'Raza' }, { field: 'estado', title: 'Estado' }]); }).catch(function (error) { showMessage(error.message, true); });
+                request(url).then(function (result) { var items = Array.isArray(result) ? result : (result ? [result] : []); return withBreedNames(items); }).then(function (items) { document.getElementById('searchResults').innerHTML = table(items, [{ field: 'id', title: 'Código' }, { field: 'nombre', title: 'Nombre' }, { field: 'raza', title: 'Raza' }, { field: 'estado', title: 'Estado' }]); }).catch(function (error) { showMessage(error.message, true); });
             });
             document.getElementById('allPetsButton').addEventListener('click', loadPets);
             document.getElementById('newPetButton').addEventListener('click', function () { send('/api/mascota', 'POST', petData()).then(function () { showMessage('Mascota ingresada.', false); loadPets(); }).catch(function (error) { showMessage(error.message, true); }); });

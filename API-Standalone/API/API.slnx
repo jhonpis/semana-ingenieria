@@ -1,4 +1,0 @@
-<Solution>
-  <Project Path="..\Conector\Conector.csproj" />
-  <Project Path="API.csproj" />
-</Solution>
