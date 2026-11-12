@@ -1,0 +1,21 @@
+@model IEnumerable<API.Controllers.MascotaWeb>
+@{
+    ViewBag.Title = "Consulta de mascotas";
+}
+<h2>Consulta de mascotas</h2>
+@using (Html.BeginForm("Consulta", "MascotasWeb", FormMethod.Get))
+{
+    <label>Codigo</label>
+    <input type="number" name="codigo" />
+    <label>Nombre</label>
+    <input type="text" name="nombre" />
+    <button type="submit">Consultar</button>
+}
+<table class="table">
+    <tr><th>Codigo</th><th>Nombre</th><th>Raza</th><th>Estado</th><th>Ingreso</th></tr>
+    @foreach (var objMascota in Model)
+    {
+        <tr><td>@objMascota.id</td><td>@objMascota.nombre</td><td>@objMascota.raza</td><td>@objMascota.estado</td><td>@objMascota.fecha_ingreso.ToShortDateString()</td></tr>
+    }
+</table>
+<p>@Html.ActionLink("Inicio", "Index", "Home")</p>

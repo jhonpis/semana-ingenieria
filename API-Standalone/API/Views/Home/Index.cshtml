@@ -1,0 +1,11 @@
+@{
+    ViewBag.Title = "El Amparo";
+}
+<h1>Sociedad Protectora de Animales El Amparo</h1>
+<p>Consulta de mascotas, adoptantes y adopciones.</p>
+<ul>
+    <li>@Html.ActionLink("Consulta de mascotas", "Consulta", "MascotasWeb")</li>
+    <li>@Html.ActionLink("Maestro-Detalle: razas y mascotas", "MaestroDetalle", "MascotasWeb")</li>
+    <li>@Html.ActionLink("Vista de mascotas y adopciones", "Vista", "MascotasWeb")</li>
+</ul>
+<p><a href="~/api/mascota">Ver API de mascotas</a></p>

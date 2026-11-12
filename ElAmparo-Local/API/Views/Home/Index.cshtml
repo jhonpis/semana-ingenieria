@@ -1,0 +1,233 @@
+@{
+    ViewBag.Title = "El Amparo";
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>El Amparo</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: Arial, sans-serif; background: #f1f5f9; color: #1f2937; }
+        header { background: #176b87; color: white; padding: 18px 30px; display: flex; justify-content: space-between; align-items: center; }
+        header h1 { margin: 0; font-size: 24px; }
+        header span { font-size: 14px; }
+        main { max-width: 1200px; margin: 25px auto; padding: 0 18px; }
+        .card { background: white; border-radius: 9px; padding: 22px; box-shadow: 0 2px 9px #0002; margin-bottom: 20px; }
+        .login { max-width: 430px; margin: 70px auto; }
+        .login h2 { color: #176b87; margin-top: 0; }
+        nav { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+        button, .link-button { border: 0; border-radius: 5px; padding: 10px 14px; background: #176b87; color: white; cursor: pointer; font-size: 14px; }
+        button:hover, .link-button:hover { background: #0e4d61; }
+        button.secondary { background: #64748b; }
+        button.danger { background: #b42318; }
+        label { display: block; font-weight: bold; margin: 9px 0 4px; }
+        input, select, textarea { width: 100%; padding: 9px; border: 1px solid #cbd5e1; border-radius: 4px; font: inherit; }
+        textarea { min-height: 75px; resize: vertical; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; }
+        .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+        .section { display: none; }
+        .section.active { display: block; }
+        table { width: 100%; border-collapse: collapse; margin-top: 18px; background: white; }
+        th, td { padding: 9px; border: 1px solid #dbe3ea; text-align: left; }
+        th { background: #e2edf2; }
+        tr.selectable { cursor: pointer; }
+        tr.selectable:hover { background: #eef7fa; }
+        .message { padding: 10px; border-radius: 5px; margin: 10px 0; display: none; }
+        .message.ok { display: block; background: #dcfce7; color: #166534; }
+        .message.error { display: block; background: #fee2e2; color: #991b1b; }
+        .muted { color: #64748b; }
+        @@media (max-width: 650px) { header { display: block; } header span { display: block; margin-top: 8px; } }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Sociedad Protectora de Animales El Amparo</h1>
+        <span id="userInfo"></span>
+    </header>
+    <main>
+        <div id="message" class="message"></div>
+
+        <section id="loginSection" class="card login">
+            <h2>Inicio de sesión</h2>
+            <p class="muted">Ingrese sus credenciales para acceder al sistema.</p>
+            <form id="loginForm">
+                <label for="loginUser">Usuario</label>
+                <input id="loginUser" required />
+                <label for="loginPassword">Clave</label>
+                <input id="loginPassword" type="password" required />
+                <div class="actions"><button type="submit">Ingresar</button></div>
+            </form>
+            <p class="muted">Usuarios de prueba: admin/123, operador/123, consulta/123.</p>
+        </section>
+
+        <section id="appSection" style="display:none">
+            <nav>
+                <button data-section="consultaSection">Consulta</button>
+                <button id="petsMenu" data-section="petsSection">Mascotas</button>
+                <button id="adoptionsMenu" data-section="adoptionsSection">Adopciones</button>
+                <a class="link-button" href="/MascotasWeb/Consulta">Consulta web</a>
+                <a class="link-button" href="/MascotasWeb/MaestroDetalle">Maestro-detalle</a>
+                <a class="link-button" href="/MascotasWeb/Vista">Vista SQL</a>
+                <button class="secondary" id="logoutButton">Cerrar sesión</button>
+            </nav>
+
+            <section id="consultaSection" class="card section active">
+                <h2>Consulta de mascotas</h2>
+                <div class="grid">
+                    <div><label for="searchCode">Código</label><input id="searchCode" type="number" /></div>
+                    <div><label for="searchName">Nombre</label><input id="searchName" /></div>
+                </div>
+                <div class="actions"><button id="searchButton">Consultar</button><button class="secondary" id="allPetsButton">Todas</button></div>
+                <div id="searchResults"></div>
+            </section>
+
+            <section id="petsSection" class="card section">
+                <h2>Ingresar, actualizar o retirar mascota</h2>
+                <input id="petId" type="hidden" />
+                <div class="grid">
+                    <div><label for="petName">Nombre</label><input id="petName" /></div>
+                    <div><label for="petBreed">Raza</label><select id="petBreed"></select></div>
+                    <div><label for="petDate">Fecha de ingreso</label><input id="petDate" type="date" /></div>
+                </div>
+                <label for="petDescription">Descripción</label>
+                <textarea id="petDescription"></textarea>
+                <div class="actions">
+                    <button id="newPetButton">Ingresar</button>
+                    <button id="updatePetButton">Cambiar datos</button>
+                    <button class="danger" id="retirePetButton">Retirar</button>
+                    <button class="secondary" id="clearPetButton">Limpiar</button>
+                </div>
+                <div id="petsResults"></div>
+            </section>
+
+            <section id="adoptionsSection" class="card section">
+                <h2>Realizar o cancelar adopción</h2>
+                <input id="adoptionId" type="hidden" />
+                <div class="grid">
+                    <div><label for="adoptionPet">Código de mascota</label><input id="adoptionPet" type="number" /></div>
+                    <div><label for="adopterName">Nombre del adoptante</label><input id="adopterName" /></div>
+                    <div><label for="adopterDocument">Documento</label><input id="adopterDocument" /></div>
+                    <div><label for="adopterPhone">Teléfono</label><input id="adopterPhone" /></div>
+                </div>
+                <div class="actions"><button id="createAdoptionButton">Realizar adopción</button><button class="danger" id="cancelAdoptionButton">Cancelar adopción</button><button class="secondary" id="loadAdoptionsButton">Consultar</button></div>
+                <div id="adoptionsResults"></div>
+            </section>
+        </section>
+    </main>
+
+    <script>
+        (function () {
+            var role = null;
+            var message = document.getElementById('message');
+
+            function showMessage(text, error) {
+                message.textContent = text;
+                message.className = 'message ' + (error ? 'error' : 'ok');
+            }
+
+            function clearMessage() { message.className = 'message'; message.textContent = ''; }
+
+            function request(url, options) {
+                return fetch(url, options || {}).then(function (response) {
+                    return response.text().then(function (text) {
+                        var data = text ? JSON.parse(text) : null;
+                        if (!response.ok) throw new Error(data && (data.Message || data.message) ? (data.Message || data.message) : 'La operación no pudo completarse.');
+                        return data;
+                    });
+                });
+            }
+
+            function send(url, method, data) {
+                return request(url, { method: method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+            }
+
+            function showSection(id) {
+                document.querySelectorAll('.section').forEach(function (item) { item.classList.remove('active'); });
+                document.getElementById(id).classList.add('active');
+                clearMessage();
+                if (id === 'consultaSection') loadPets();
+                if (id === 'petsSection') { loadBreeds(); loadPets(); }
+                if (id === 'adoptionsSection') loadAdoptions();
+            }
+
+            function table(items, columns, select) {
+                if (!items || !items.length) return '<p class="muted">No hay registros para mostrar.</p>';
+                var html = '<table><thead><tr>' + columns.map(function (c) { return '<th>' + c.title + '</th>'; }).join('') + '</tr></thead><tbody>';
+                items.forEach(function (item, index) {
+                    html += '<tr class="' + (select ? 'selectable' : '') + '" data-index="' + index + '">' + columns.map(function (c) { return '<td>' + (item[c.field] == null ? '' : item[c.field]) + '</td>'; }).join('') + '</tr>';
+                });
+                return html + '</tbody></table>';
+            }
+
+            function loadBreeds() {
+                request('/api/raza').then(function (items) {
+                    var select = document.getElementById('petBreed');
+                    select.innerHTML = '<option value="">Seleccione una raza</option>';
+                    (items || []).forEach(function (item) { select.innerHTML += '<option value="' + item.codigo + '">' + item.nombre + '</option>'; });
+                }).catch(function (error) { showMessage(error.message, true); });
+            }
+
+            function loadPets() {
+                request('/api/mascota').then(function (items) {
+                    document.getElementById('searchResults').innerHTML = table(items, [{ field: 'id', title: 'Código' }, { field: 'nombre', title: 'Nombre' }, { field: 'codigo_raza', title: 'Raza' }, { field: 'estado', title: 'Estado' }]);
+                    document.getElementById('petsResults').innerHTML = table(items, [{ field: 'id', title: 'Código' }, { field: 'nombre', title: 'Nombre' }, { field: 'estado', title: 'Estado' }, { field: 'descripcion', title: 'Descripción' }], true);
+                    document.querySelectorAll('#petsResults tr.selectable').forEach(function (row) { row.addEventListener('click', function () { selectPet(items[parseInt(row.getAttribute('data-index'), 10)]); }); });
+                }).catch(function (error) { showMessage(error.message, true); });
+            }
+
+            function selectPet(item) {
+                document.getElementById('petId').value = item.id || '';
+                document.getElementById('petName').value = item.nombre || '';
+                document.getElementById('petBreed').value = item.codigo_raza || '';
+                document.getElementById('petDescription').value = item.descripcion || '';
+                document.getElementById('petDate').value = item.fecha_ingreso ? item.fecha_ingreso.substring(0, 10) : '';
+            }
+
+            function petData() {
+                return { id: parseInt(document.getElementById('petId').value || '0', 10), nombre: document.getElementById('petName').value, codigo_raza: parseInt(document.getElementById('petBreed').value, 10), fecha_ingreso: document.getElementById('petDate').value, descripcion: document.getElementById('petDescription').value, estado: 'Disponible' };
+            }
+
+            function loadAdoptions() {
+                request('/api/adopcion').then(function (items) {
+                    document.getElementById('adoptionsResults').innerHTML = table(items, [{ field: 'id', title: 'Código' }, { field: 'id_mascota', title: 'Mascota' }, { field: 'id_adoptante', title: 'Adoptante' }, { field: 'fecha', title: 'Fecha' }, { field: 'estado', title: 'Estado' }], true);
+                    document.querySelectorAll('#adoptionsResults tr.selectable').forEach(function (row) { row.addEventListener('click', function () { document.getElementById('adoptionId').value = items[parseInt(row.getAttribute('data-index'), 10)].id; }); });
+                }).catch(function (error) { showMessage(error.message, true); });
+            }
+
+            document.getElementById('loginForm').addEventListener('submit', function (event) {
+                event.preventDefault();
+                request('/api/usuarios/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ usuario: document.getElementById('loginUser').value, clave: document.getElementById('loginPassword').value }) }).then(function (user) {
+                    role = user.rol;
+                    document.getElementById('loginSection').style.display = 'none';
+                    document.getElementById('appSection').style.display = 'block';
+                    document.getElementById('userInfo').textContent = user.usuario + ' - ' + user.rol;
+                    if (role.toUpperCase() === 'CONSULTA') { document.getElementById('petsMenu').style.display = 'none'; document.getElementById('adoptionsMenu').style.display = 'none'; }
+                    showMessage('Bienvenido, ' + user.usuario + '.', false);
+                    loadPets();
+                }).catch(function (error) { showMessage(error.message, true); });
+            });
+
+            document.querySelectorAll('nav button[data-section]').forEach(function (button) { button.addEventListener('click', function () { showSection(button.getAttribute('data-section')); }); });
+            document.getElementById('logoutButton').addEventListener('click', function () { location.reload(); });
+            document.getElementById('searchButton').addEventListener('click', function () {
+                var code = document.getElementById('searchCode').value, name = document.getElementById('searchName').value, url = '/api/mascota';
+                if (code) url += '/' + code; else if (name) url += '/buscar/' + encodeURIComponent(name);
+                request(url).then(function (result) { var items = Array.isArray(result) ? result : (result ? [result] : []); document.getElementById('searchResults').innerHTML = table(items, [{ field: 'id', title: 'Código' }, { field: 'nombre', title: 'Nombre' }, { field: 'codigo_raza', title: 'Raza' }, { field: 'estado', title: 'Estado' }]); }).catch(function (error) { showMessage(error.message, true); });
+            });
+            document.getElementById('allPetsButton').addEventListener('click', loadPets);
+            document.getElementById('newPetButton').addEventListener('click', function () { send('/api/mascota', 'POST', petData()).then(function () { showMessage('Mascota ingresada.', false); loadPets(); }).catch(function (error) { showMessage(error.message, true); }); });
+            document.getElementById('updatePetButton').addEventListener('click', function () { if (!document.getElementById('petId').value) return showMessage('Seleccione una mascota.', true); send('/api/mascota', 'PUT', petData()).then(function () { showMessage('Mascota actualizada.', false); loadPets(); }).catch(function (error) { showMessage(error.message, true); }); });
+            document.getElementById('retirePetButton').addEventListener('click', function () { if (!document.getElementById('petId').value) return showMessage('Seleccione una mascota.', true); var data = petData(); data.estado = 'Retirada'; send('/api/mascota', 'PUT', data).then(function () { showMessage('Mascota retirada.', false); loadPets(); }).catch(function (error) { showMessage(error.message, true); }); });
+            document.getElementById('clearPetButton').addEventListener('click', function () { ['petId', 'petName', 'petDescription', 'petDate'].forEach(function (id) { document.getElementById(id).value = ''; }); document.getElementById('petBreed').value = ''; });
+            document.getElementById('loadAdoptionsButton').addEventListener('click', loadAdoptions);
+            document.getElementById('cancelAdoptionButton').addEventListener('click', function () { var id = document.getElementById('adoptionId').value; if (!id) return showMessage('Seleccione una adopción.', true); send('/api/adopcion', 'PUT', { id: parseInt(id, 10) }).then(function () { showMessage('Adopción cancelada.', false); loadAdoptions(); }).catch(function (error) { showMessage(error.message, true); }); });
+            document.getElementById('createAdoptionButton').addEventListener('click', function () {
+                var documentNumber = document.getElementById('adopterDocument').value;
+                request('/api/adoptante').then(function (adopters) { var adopter = (adopters || []).filter(function (item) { return item.documento === documentNumber; })[0]; var operation = adopter ? Promise.resolve(adopter) : send('/api/adoptante', 'POST', { nombre: document.getElementById('adopterName').value, documento: documentNumber, telefono: document.getElementById('adopterPhone').value }); return operation; }).then(function (adopter) { return request('/api/adoptante').then(function (items) { return items.filter(function (item) { return item.documento === documentNumber; })[0] || adopter; }); }).then(function (adopter) { return send('/api/adopcion', 'POST', { id_mascota: parseInt(document.getElementById('adoptionPet').value, 10), id_adoptante: adopter.id, fecha: new Date().toISOString(), estado: 'Vigente' }); }).then(function () { showMessage('Adopción realizada.', false); loadAdoptions(); }).catch(function (error) { showMessage(error.message, true); });
+            });
+        }());
+    </script>
+</body>
+</html>

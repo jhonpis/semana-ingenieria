@@ -1,0 +1,13 @@
+@model IEnumerable<API.Controllers.VistaMascota>
+@{
+    ViewBag.Title = "Vista de mascotas";
+}
+<h2>Vista: mascotas y adopciones vigentes</h2>
+<table class="table">
+    <tr><th>Codigo</th><th>Mascota</th><th>Raza</th><th>Estado</th><th>Adoptante</th></tr>
+    @foreach (var objMascota in Model)
+    {
+        <tr><td>@objMascota.id</td><td>@objMascota.nombre</td><td>@objMascota.raza</td><td>@objMascota.estado</td><td>@objMascota.adoptante</td></tr>
+    }
+</table>
+<p>@Html.ActionLink("Inicio", "Index", "Home")</p>

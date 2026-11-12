@@ -27,6 +27,33 @@ Solución de adopción de mascotas para la Sociedad Protectora de Animales El Am
 
 La solución `ElAmparo-Web.slnx` permite abrir por separado la API, el Conector y las vistas web.
 
+## Ejecutar solamente la API sin Visual Studio
+
+Para dejar la API funcionando como un servicio local independiente:
+
+1. Ejecute `IniciarApi.bat` con doble clic, o ejecute `IniciarApi.ps1` desde PowerShell.
+2. El lanzador inicia IIS Express con `C:\jhon\ElAmparo\API` y espera hasta que la página principal responda.
+3. Use la API en `http://localhost:59539/` desde Postman, un navegador o cualquier cliente HTTP.
+4. Mantenga abierta la ventana del lanzador mientras utilice la API.
+5. Presione `Ctrl+C` en esa ventana para detener únicamente la API iniciada por el script.
+
+Endpoints principales:
+
+- `GET /api/raza`, `GET /api/raza/{id}`, `POST`, `PUT` y `DELETE`.
+- `GET /api/mascota`, `GET /api/mascota/{id}`, `GET /api/mascota/buscar/{nombre}`, `POST`, `PUT` y `DELETE`.
+- `GET /api/adoptante`, `GET /api/adoptante/{id}`, `POST`, `PUT` y `DELETE`.
+- `GET /api/adopcion`, `GET /api/adopcion/{id}`, `POST`, `PUT` y `DELETE`.
+- `POST /api/usuarios/login` para validar usuario y rol.
+
+Ejemplo de login:
+
+```json
+{
+  "usuario": "admin",
+  "clave": "123"
+}
+```
+
 La aplicación de escritorio incluye consulta por código/nombre, actualización de mascotas, adopciones, cancelaciones, control de acceso por rol y menú MDI. La aplicación web está disponible en:
 
 - `/`
